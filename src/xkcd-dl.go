@@ -1,23 +1,23 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"net/http"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
+	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
-	"log"
 )
 
 type xkcdPost struct {
-	Num int
+	Num                                                                   int
 	Month, Link, Year, News, Safe_title, Transcript, Alt, Img, Title, Day string
 }
 
-func getPost(url string) (xkcdPost) {
+func getPost(url string) xkcdPost {
 	post := xkcdPost{}
 
 	resp, err := http.Get(url)
@@ -27,7 +27,7 @@ func getPost(url string) (xkcdPost) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-	    panic(err.Error())
+		panic(err.Error())
 	}
 
 	json.Unmarshal(body, &post)
@@ -45,17 +45,16 @@ func saveImage(url, path string) {
 
 	file, err := os.Create(path)
 	if err != nil {
-        log.Fatal(err)
-    }
+		log.Fatal(err)
+	}
 
-    defer file.Close()
+	defer file.Close()
 
-    _, err = io.Copy(file, resp.Body)
-    if err != nil {
-        log.Fatal(err)
-    }
+	_, err = io.Copy(file, resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
-
 
 func main() {
 	var wg sync.WaitGroup
@@ -66,9 +65,9 @@ func main() {
 
 	os.Mkdir("images", os.ModePerm)
 
-	f, err := os.OpenFile("log.txt", os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	f, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-	    log.Fatalf("error opening file: %v", err)
+		log.Fatalf("error opening file: %v", err)
 	}
 
 	defer f.Close()
